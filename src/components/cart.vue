@@ -1,0 +1,216 @@
+<template>
+    <div>
+        <mall-header></mall-header>
+        <mall-nav currentRoute="My Cart"></mall-nav>
+        <div class="cart">
+            <h1 class="title">MY  CART</h1>
+            <div class="row">
+                <span class="items column">ITEMS</span>
+                <span class="price column">PRICE</span>
+                <span class="quantity column">QUANTITY</span>
+                <span class="subtotal column">SUBTOTAL</span>
+                <span class="edit column">EDIT</span>
+            </div>
+            <ul class="cart-list">
+                <li v-for="(item, index) in  data" :key="index" class="cart-item">
+                    <div class="g-items g-column">
+                        <i class="icon-checkmark2"></i>
+                        <img :src="'static/image/' + item.image" class="image" width="70" height="90">
+                        <span class="name">{{ item.productName }}</span>
+                    </div>
+                    <div class="g-price g-column">
+                        <span>{{ item.price }}</span>
+                    </div>
+                    <div class="g-quantity g-column">
+                        <i class="icon-minus" @mousedown="changeQuantityBefore" @mouseup="changeQuantityAfter"></i>
+                        <input class="input" v-model="quantity">
+                        <i class="icon-plus" @mousedown="changeQuantityBefore" @mouseup="changeQuantityAfter"></i>
+                    </div>
+                    <div class="g-subtotal g-column">
+                        <span>{{ item.price * quantity }}</span>
+                    </div>
+                    <div class="g-edit g-column">
+                        <i class="icon-bin"></i>
+                    </div>
+                </li>
+            </ul>
+            <div class="confirm">
+                <div class="select">
+                    <i class="icon-checkmark2"></i>
+                    <span class="all">Select all</span>
+                    <span class="clear">Delete selected</span>
+                </div>
+                <div class="checkout">
+                    <span class="total">item total: 
+                        <strong class="t-price">123</strong>
+                    </span>
+                    <button type="submit" class="checkout-button" @click="selectAddress">CHECKOUT</button>
+                </div>
+            </div>
+        </div>
+        <mall-footer></mall-footer>
+    </div>
+</template>
+
+<script>
+import MallFooter from 'base/mall-footer/mall-footer'
+import MallHeader from 'base/mall-header/mall-header'
+import MallNav from 'base/mall-nav/mall-nav'
+
+export default {
+    props: {
+        data: {
+            type: Array,
+            default: [{productName: '鞋子', price: 120, image: 'shoe.png'},
+            {productName: 'T恤衫', price: 50, image: 't-shirt.png'},
+            {productName: '眼镜', price: 80, image: 'glass.png'},
+            {productName: '钱包', price: 100, image: 'bag.png'}]
+        }
+    },
+    data() {
+        return {
+            quantity: 1
+        }
+    },
+    methods: {
+        changeQuantityBefore(e) {
+            e.target.style.transform = 'scale(0.9, 0.9)'
+        },
+        changeQuantityAfter(e) {
+            e.target.style.transform = 'scale(1, 1)'
+        },
+        selectAddress() {
+            this.$router.push('/address')
+        }
+    },
+    components: {
+        MallFooter,
+        MallHeader,
+        MallNav
+    }
+}
+</script>
+
+<style lang="stylus" scoped>
+@import '~common/stylus/variable'
+@import '../common/stylus/style.css'
+
+.cart
+    width 100vw
+    background-color $background-content-color
+    padding 40px 20px
+    box-sizing border-box
+    .title
+        font-size $font-size-large
+        text-align left
+        letter-spacing 4px
+        word-spacing 8px
+    .row
+        background-color $background-column-color
+        height 40px
+        font-size $font-size-medium
+        .column
+            display inline-block
+            color $input-border-color
+            height 40px
+            line-height 40px
+            letter-spacing 2px
+            box-sizing border-box
+            float left
+        .items
+            width 36%
+        .price, .quantity, .subtotal, .edit
+            width 16%
+    .cart-list
+        list-style none
+        padding 0
+        margin 0
+        background-color $background-color
+        .cart-item
+            height 140px
+            padding 0
+            margin 0
+            .g-column
+                float left
+                height 140px
+                display inline-block
+                box-sizing border-box
+                display flex
+                justify-content center
+                align-items center
+            .g-items
+                width 36%
+                justify-content flex-start
+                .icon-checkmark2
+                    display inline-block
+                    margin 0 30px 0 10px
+                .image
+                    display inline-block
+                    margin-right 10px
+            .g-price, .g-quantity, .g-subtotal, .g-edit
+                width 16%
+                .icon-minus, .icon-plus
+                    display inline-block
+                    background-color $input-border-color
+                    height 30px
+                    width 30px
+                    line-height 30px
+                    cursor pointer
+                    //font-size $font-size-large
+                .input
+                    display inline-block
+                    height 30px
+                    line-height 30px
+                    width 50px
+                    box-sizing border-box
+                    border 1px solid $background-nav-color
+                    margin 0
+                    font-size $font-size-medium-x
+                    text-align center
+                .icon-bin
+                    font-size $font-size-large
+                    color $font-middle-color
+                .icon-bin:hover
+                    cursor pointer
+    .confirm
+        width 100%
+        height 50px
+        box-sizing border-box
+        background-color $background-color
+        font-size $font-size-medium
+        margin-top 20px
+        padding-left 10px
+        display flex
+        justify-content space-between
+        align-items center
+        .select
+            .icon-checkmark2
+                margin-right 20px
+            .all, .clear
+                height 100%
+                line-height 100%
+                margin-right 20px
+                cursor pointer
+        .checkout
+            height 100%
+            .total
+                display inline-block
+                height 100%
+                margin-right 20px
+                .t-price
+                    color $font-nav-color
+                    font-size 1.1em
+            .checkout-button
+                display inline-block
+                height 100%
+                width 150px
+                letter-spacing 2px
+                font-size $font-size-medium-x
+                background-color $font-nav-color
+                text-align center
+                color $input-border-color
+                border 0
+
+        
+</style>
+
