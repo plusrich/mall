@@ -25,17 +25,17 @@
           <el-form slot="content" class="content">
               <h2 class="loginTitle">Login in</h2>
               <el-form-item class="input-wrapper">
-                  <el-input type="text" class="input">
+                  <el-input type="text" class="input" v-model="user">
                       <i slot="prefix" class="icon-user"></i>
                   </el-input>
               </el-form-item>
               <el-form-item class="input-wrapper">
-                  <el-input type="password" class="input">
+                  <el-input type="password" class="input" v-model="pwd">
                       <i slot="prefix" class="icon-lock"></i>
                   </el-input>
               </el-form-item>
           </el-form>
-          <el-button slot="button" type="primary" class="button">登陆</el-button>
+          <el-button slot="button" type="primary" class="button" @click="sendLoginRequest">登陆</el-button>
       </modal>
   </div>
 </template>
@@ -46,10 +46,13 @@ import MallHeader from 'base/mall-header/mall-header'
 import MallNav from 'base/mall-nav/mall-nav'
 import Modal from 'base/Modal/Modal'
 import GoodsList from 'components/goods-list'
+import {login} from 'common/js/api.js'
 
 export default {
     data () {
         return {
+            user: '',
+            pwd: '',
             selectedFilter: 0,
             ascending: true,
             descending: false,
@@ -72,6 +75,12 @@ export default {
             this.descending = !this.descending
             this.$refs.defaultSort.style.color = 'rgb(0, 0, 0)'
             this.$refs.priceSort.style.color = 'rgb(238, 122, 35)'
+        },
+        async sendLoginRequest() {
+            let user = this.user
+            let pwd = this.pwd
+            let res = await login(user, pwd)
+            console.log(res)
         }
     },
     components: {

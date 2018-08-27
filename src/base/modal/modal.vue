@@ -1,10 +1,10 @@
 <template>
     <transition name="modal-wrapper">
-        <div class="modal-wrapper" v-show="showWrapperFlag" @click="hide">
+        <div class="modal-wrapper" v-show="showWrapperFlag" @click.stop="hide">
             <span class="before"></span>
             <transition name="modal">
-                <div class="modal" v-show="showFlag">
-                    <i class="icon-cross" @click="hide"></i>
+                <div class="modal" v-show="showFlag" @click.stop="() => {return}">
+                    <i class="icon-cross" @click.stop="hide"></i>
                     <slot name="content"></slot>
                     <slot name="button"></slot>
                 </div>
