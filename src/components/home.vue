@@ -24,6 +24,7 @@
       <modal ref="modal" class="modal">
           <el-form slot="content" class="content">
               <h2 class="loginTitle">Login in</h2>
+              <span v-if="loginErrorText !== ''">{{ loginErrorText }}</span>
               <el-form-item class="input-wrapper">
                   <el-input type="text" class="input" v-model="user">
                       <i slot="prefix" class="icon-user"></i>
@@ -47,12 +48,14 @@ import MallNav from 'base/mall-nav/mall-nav'
 import Modal from 'base/Modal/Modal'
 import GoodsList from 'components/goods-list'
 import {login} from 'common/js/api.js'
+import {mapGetters, mapMutations} from 'vuex'
 
 export default {
     data () {
         return {
             user: '',
             pwd: '',
+            loginErrorText: '',
             selectedFilter: 0,
             ascending: true,
             descending: false,
@@ -80,8 +83,19 @@ export default {
             let user = this.user
             let pwd = this.pwd
             let res = await login(user, pwd)
-            console.log(res)
-        }
+            if (res.status !== 1) {
+                this.loginErrorText = res.message
+                return
+            }
+            this.$refs.modal.hide()
+            this.loginErrorText = ''
+            this.user = ''
+            this.pwd = ''
+            this.setId(res.user._id)
+        },
+        ...mapMutations({
+            setId: 'SET_ID'
+        })
     },
     components: {
         MallFooter,

@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const ObjectId = mongoose.ObjectId
+const ObjectId = Schema.Types.ObjectId
 
-mongoose.connect('mongodb://localhost/users')
+mongoose.connect('mongodb://localhost:27017/mall')
 
 let userSchema = new Schema({
     _id: ObjectId,
