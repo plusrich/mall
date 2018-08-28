@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-      <mall-header @showLogin="showLogin"></mall-header>
+      <mall-header @showLogin="showLogin" @displayCart="displayCart"></mall-header>
       <mall-nav currentRoute="Goods"></mall-nav>
       <div class="sort-wrapper">
           <div class="sort">
@@ -18,13 +18,13 @@
                   <span :class="['filter-left-border', selectedFilter === index ? 'selected-filter-border' : '']"></span>
               </div>
           </div>
-          <goods-list></goods-list>
+          <goods-list ref="goodsList" :data="goods" @addCart="addCart"></goods-list>
       </div>
       <mall-footer></mall-footer>
       <modal ref="modal" class="modal">
           <el-form slot="content" class="content">
-              <h2 class="loginTitle">Login in</h2>
-              <span v-if="loginErrorText !== ''">{{ loginErrorText }}</span>
+              <h2 class="login-title">Login in</h2>
+              <span v-if="loginErrorText !== ''" class="login-error">{{ loginErrorText }}</span>
               <el-form-item class="input-wrapper">
                   <el-input type="text" class="input" v-model="user">
                       <i slot="prefix" class="icon-user"></i>
@@ -38,6 +38,9 @@
           </el-form>
           <el-button slot="button" type="primary" class="button" @click="sendLoginRequest">登陆</el-button>
       </modal>
+      <modal ref="loginModal">
+          <p slot="content">请先登陆</p>
+      </modal>
   </div>
 </template>
 
@@ -47,7 +50,7 @@ import MallHeader from 'base/mall-header/mall-header'
 import MallNav from 'base/mall-nav/mall-nav'
 import Modal from 'base/Modal/Modal'
 import GoodsList from 'components/goods-list'
-import {login} from 'common/js/api.js'
+import {login, getGoods} from 'common/js/api.js'
 import {mapGetters, mapMutations} from 'vuex'
 
 export default {
@@ -56,15 +59,41 @@ export default {
             user: '',
             pwd: '',
             loginErrorText: '',
+            goods: [],
             selectedFilter: 0,
             ascending: true,
             descending: false,
             filter: ['All', '0.00 - 100.00', '100.00 - 500.00', '500.00 - 1000.00', '1000.00 - 5000.00']
         }
     },
+    computed: {
+        ...mapGetters([
+            'id'
+        ])
+    },
+    async mounted() {
+        let obj = await getGoods()
+        this.goods = obj.products
+        console.log(this.goods)
+    },
     methods: {
         showLogin() {
             this.$refs.modal.show()
+        },
+        displayCart() {
+            if (this.id === '') {
+                this.$refs.loginModal.show()
+                return
+            }
+            this.$router.push('/cart')
+        },
+        addCart(item) {
+            if (this.id === '') {
+                this.$refs.loginModal.show()
+                return
+            }
+            this.setCartList(item)
+            this.$router.push('/cart')
         },
         changeFilter(index) {
             this.selectedFilter = index
@@ -83,8 +112,10 @@ export default {
             let user = this.user
             let pwd = this.pwd
             let res = await login(user, pwd)
-            if (res.status !== 1) {
-                this.loginErrorText = res.message
+            if (res.status !== 1) {          
+                this.loginErrorText = res.messgae
+                this.user = ''
+                this.pwd = ''
                 return
             }
             this.$refs.modal.hide()
@@ -92,9 +123,12 @@ export default {
             this.user = ''
             this.pwd = ''
             this.setId(res.user._id)
+            this.setName(res.user.userName)
         },
         ...mapMutations({
-            setId: 'SET_ID'
+            setId: 'SET_ID',
+            setName: 'SET_NAME',
+            setCartList: 'SET_CARTLIST'
         })
     },
     components: {
@@ -198,10 +232,15 @@ export default {
         .content
             width 70%
             margin 30px auto 0
-            .loginTitle
+            .login-title
                 margin-bottom .5em
                 font-size $font-size-medium-x
                 text-align left
+            .login-error
+                color $font-nav-color
+                text-align left
+                display inline-block
+                width 100%
             .input-wrapper
                 .input
                     font-size 16px

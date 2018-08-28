@@ -6,7 +6,7 @@
             <span class="name">hello, {{ name }}</span>
             <a class="logout">Logout</a>
         </div>
-        <i class="icon-cart" @click="goToCart"></i>
+        <i class="icon-cart" @click="goCart"></i>
     </div>
 </template>
 
@@ -21,8 +21,8 @@ export default {
     },
     computed: {
         ...mapGetters([
-            id,
-            name
+            'id',
+            'name'
         ])
     },
     methods: {
@@ -35,8 +35,8 @@ export default {
         showLoginPrompt() {
             this.$emit('showLogin')
         },
-        goToCart() {
-            this.$router.push('/cart')
+        goCart() {
+            this.$emit('displayCart')
         }
     }
 }

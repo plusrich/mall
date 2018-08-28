@@ -5,3 +5,7 @@ export const id = (state) => {
 export const name = (state) => {
     return state.name
 }
+
+export const cartList = (state) => {
+    return state.cartList
+}

@@ -31,13 +31,16 @@ export default {
           value: '选项二',
           label: '美国'
         }
-      ]
+      ],
+      value: ''
     }
   },
   props: {
       terms: {
           type: Array,
-          default: ['Copyright © 2017 IMooc All Rights Reserved.', 'About Us', 'Terms & Conditions', 'Privacy Policy']
+          default: () => {
+              return ['Copyright © 2017 IMooc All Rights Reserved.', 'About Us', 'Terms & Conditions', 'Privacy Policy']
+          }
       }
   }
 }

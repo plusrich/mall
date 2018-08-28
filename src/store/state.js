@@ -1,6 +1,7 @@
 const state = {
     id: '',
-    name: ''
+    name: '',
+    cartList: []
 }
 
 export default state

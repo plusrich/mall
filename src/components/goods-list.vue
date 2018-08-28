@@ -1,23 +1,32 @@
 <template>
     <div class="goods-list-wrapper">
         <div class="good" v-for="(item, index) in data" :key="index">
-            <img :src="'../../static/image/' + item.image" width="140" height="140" class="good-image">
+            <img :src="'../../static/image/' + item.productImage" width="140" height="140" class="good-image">
             <p class="good-name">{{ item.productName }}</p>
             <p class="good-price">{{ item.price }}</p>
-            <el-button type="danger" plain class="button">加入购物车</el-button>
+            <el-button type="danger" plain class="button" @click="goCart(item)">加入购物车</el-button>
         </div>
     </div>
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+
 export default {
     props: {
         data: {
             type: Array,
-            default: [{productName: '鞋子', price: 120, image: 'shoe.png'},
-            {productName: 'T恤衫', price: 50, image: 't-shirt.png'},
-            {productName: '眼镜', price: 80, image: 'glass.png'},
-            {productName: '钱包', price: 100, image: 'bag.png'}]
+            default: []
+        }
+    },
+    computed: {
+        ...mapGetters([
+            'id'
+        ])
+    },
+    methods: {
+        goCart(item) {
+            this.$emit('addCart', item)
         }
     }
 }
