@@ -98,6 +98,7 @@ export default {
             let p = Object.assign({}, this.cartList[index])
             p.quantity += 1
             p.subtotal += p.price
+            p.checked = true
             this.setCartList(p)
             this.$router.push('/cart')
         },
@@ -106,6 +107,7 @@ export default {
                 let p = Object.assign({}, list[i])
                 p['quantity'] = 0
                 p['subtotal'] = 0
+                p['checked'] = false
                 this.setCartList(p)
             }
         },

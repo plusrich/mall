@@ -14,7 +14,7 @@
             <ul class="cart-list">
                 <li v-for="(item, index) in cartList" :key="index" class="cart-item">
                     <div class="g-items g-column">
-                        <i class="icon-checkmark2"></i>
+                        <i :class="['icon-checkmark2', item.checked ? 'checked' : '']" @click="toggleCheckStatus(item)"></i>
                         <img :src="'static/image/' + item.productImage" class="image" width="70" height="90">
                         <span class="name">{{ item.productName }}</span>
                     </div>
@@ -44,7 +44,7 @@
                     <span class="total">item total: 
                         <strong class="t-price">{{ total }}</strong>
                     </span>
-                    <button type="submit" class="checkout-button" @click="selectAddress">CHECKOUT</button>
+                    <button type="submit" class="checkout-button" @click="goCheckout">CHECKOUT</button>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@ import {mapGetters, mapMutations} from 'vuex'
 export default {
     data() {
         return {
-
+            
         }
     },
     computed: {
@@ -73,8 +73,19 @@ export default {
             return total
         },
         ...mapGetters([
-            'cartList'
+            'id',
+            'name',
+            'cartList',
+            'order'
         ])
+    },
+    mounted() {
+        setTimeout(() => {
+            if (this.order.goods) {
+                return
+            }
+            this.initializeOrder()
+        }, 20)
     },
     methods: {
         changeQuantityBefore(e) {
@@ -112,11 +123,40 @@ export default {
                 this.setCartList(p)
             }
         },
-        selectAddress() {
+        toggleCheckStatus(item) {
+            item.checked = !item.checked
+        },
+        initializeOrder() {
+            let order = {
+                date: '',
+                goods: [],
+                address: '',
+                user: {
+                    id: this.id,
+                    name: this.name
+                }
+            }
+            this.setOrder(order)
+        },
+        goCheckout() {
+            let {...odr} = this.order
+            console.log(odr)
+            for (var i = 0;i < this.cartList.length;i++) {
+                let item = this.cartList[i]
+                if (item.checked) {
+                    odr.goods.push(item)
+                }
+            }
+            if (odr.goods.length === 0) {
+                alert('你还未选择任何商品')
+                return
+            }
+            this.setOrder(odr)
             this.$router.push('/address')
         },
         ...mapMutations({
-            setCartList: 'SET_CARTLIST'
+            setCartList: 'SET_CARTLIST',
+            setOrder: 'SET_ORDER'
         })
     },
     components: {
@@ -180,6 +220,8 @@ export default {
                 .icon-checkmark2
                     display inline-block
                     margin 0 30px 0 10px
+                .checked
+                    color $font-emphasize-color
                 .image
                     display inline-block
                     margin-right 10px
