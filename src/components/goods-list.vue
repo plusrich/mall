@@ -1,16 +1,16 @@
 <template>
     <div class="goods-list-wrapper">
-        <div class="good" v-for="(item, index) in data" :key="index">
+        <div class="good" v-for="(item, index) in data" :key="index" v-show="data.length > 1">
             <img :src="'../../static/image/' + item.productImage" width="140" height="140" class="good-image">
             <p class="good-name">{{ item.productName }}</p>
             <p class="good-price">{{ item.price }}</p>
             <el-button type="danger" plain class="button" @click="goCart(item)">加入购物车</el-button>
         </div>
+        <img class="lazyload" v-lazy="'../../static/image/loading.gif'" width="50" height="50" v-show="data.length < 1">
     </div>
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
 
 export default {
     props: {
@@ -18,11 +18,6 @@ export default {
             type: Array,
             default: []
         }
-    },
-    computed: {
-        ...mapGetters([
-            'id'
-        ])
     },
     methods: {
         goCart(item) {
@@ -37,6 +32,7 @@ export default {
 @import '~common/stylus/variable'
 
 .goods-list-wrapper
+    position relative
     width 70%
     box-sizing border-box
     //border 1px solid red
@@ -60,5 +56,10 @@ export default {
             border 1px solid $input-border-color
         .good-name, .good-price
             text-align left
+    .lazyload
+        position absolute
+        left 50%
+        top 30px
+        transform translateX(-50%)
 </style>
 

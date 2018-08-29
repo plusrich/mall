@@ -12,22 +12,22 @@
                 <span class="edit column">EDIT</span>
             </div>
             <ul class="cart-list">
-                <li v-for="(item, index) in  data" :key="index" class="cart-item">
+                <li v-for="(item, index) in cartList" :key="index" class="cart-item">
                     <div class="g-items g-column">
                         <i class="icon-checkmark2"></i>
-                        <img :src="'static/image/' + item.image" class="image" width="70" height="90">
+                        <img :src="'static/image/' + item.productImage" class="image" width="70" height="90">
                         <span class="name">{{ item.productName }}</span>
                     </div>
                     <div class="g-price g-column">
                         <span>{{ item.price }}</span>
                     </div>
                     <div class="g-quantity g-column">
-                        <i class="icon-minus" @mousedown="changeQuantityBefore" @mouseup="changeQuantityAfter"></i>
-                        <input class="input" v-model="quantity">
-                        <i class="icon-plus" @mousedown="changeQuantityBefore" @mouseup="changeQuantityAfter"></i>
+                        <i class="icon-minus" @mousedown="changeQuantityBefore" @mouseup="minusQuantity(item)"></i>
+                        <input class="input" ref="quantityInput" v-model="item.quantity" @change="changeQuantity(item, index)">
+                        <i class="icon-plus" @mousedown="changeQuantityBefore" @mouseup="plusQuantity(item)"></i>
                     </div>
                     <div class="g-subtotal g-column">
-                        <span>{{ item.price * quantity }}</span>
+                        <span>{{ item.subtotal }}</span>
                     </div>
                     <div class="g-edit g-column">
                         <i class="icon-bin"></i>
@@ -42,7 +42,7 @@
                 </div>
                 <div class="checkout">
                     <span class="total">item total: 
-                        <strong class="t-price">123</strong>
+                        <strong class="t-price">{{ total }}</strong>
                     </span>
                     <button type="submit" class="checkout-button" @click="selectAddress">CHECKOUT</button>
                 </div>
@@ -56,32 +56,68 @@
 import MallFooter from 'base/mall-footer/mall-footer'
 import MallHeader from 'base/mall-header/mall-header'
 import MallNav from 'base/mall-nav/mall-nav'
+import {mapGetters, mapMutations} from 'vuex'
 
 export default {
-    props: {
-        data: {
-            type: Array,
-            default: [{productName: '鞋子', price: 120, image: 'shoe.png'},
-            {productName: 'T恤衫', price: 50, image: 't-shirt.png'},
-            {productName: '眼镜', price: 80, image: 'glass.png'},
-            {productName: '钱包', price: 100, image: 'bag.png'}]
-        }
-    },
     data() {
         return {
-            quantity: 1
+
         }
+    },
+    computed: {
+        total() {
+            let total = 0
+            for (var i = 0;i < this.cartList.length;i++) {
+                total += this.cartList[i].subtotal
+            }
+            return total
+        },
+        ...mapGetters([
+            'cartList'
+        ])
     },
     methods: {
         changeQuantityBefore(e) {
-            e.target.style.transform = 'scale(0.9, 0.9)'
+            //e.target.style.transform = 'scale(0.9, 0.9)'
         },
-        changeQuantityAfter(e) {
-            e.target.style.transform = 'scale(1, 1)'
+        minusQuantity(item) {
+            let p = Object.assign({}, item)
+            if (p.quantity === 0) {
+                return
+            }
+            p.quantity = Number(p.quantity)
+            p.quantity -= 1
+            p.subtotal -= p.price
+            this.setCartList(p)
+        },
+        plusQuantity(item) {
+            let p = Object.assign({}, item)
+            p.quantity = Number(p.quantity)
+            p.quantity += 1
+            p.subtotal += p.price
+            this.setCartList(p)
+        },
+        changeQuantity(item, index) {
+            let value = Number(this.$refs.quantityInput[index].value)
+            if (isNaN(value) || Number(value) <= 0) {
+                let p = Object.assign({}, item)
+                p.quantity = 0
+                p.subtotal = 0
+                this.setCartList(p)
+                this.$refs.quantityInput[index].value = 0
+            } else {
+                let p = Object.assign({}, item)
+                p.quantity = value
+                p.subtotal = p.quantity * p.price
+                this.setCartList(p)
+            }
         },
         selectAddress() {
             this.$router.push('/address')
-        }
+        },
+        ...mapMutations({
+            setCartList: 'SET_CARTLIST'
+        })
     },
     components: {
         MallFooter,

@@ -68,13 +68,13 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'id'
+            'id',
+            'cartList'
         ])
     },
     async mounted() {
         let obj = await getGoods()
         this.goods = obj.products
-        console.log(this.goods)
     },
     methods: {
         showLogin() {
@@ -92,8 +92,22 @@ export default {
                 this.$refs.loginModal.show()
                 return
             }
-            this.setCartList(item)
+            let index = this.cartList.findIndex((g) => {
+                return g._id === item._id
+            })
+            let p = Object.assign({}, this.cartList[index])
+            p.quantity += 1
+            p.subtotal += p.price
+            this.setCartList(p)
             this.$router.push('/cart')
+        },
+        initializeCartList(list) {
+            for (var i = 0;i < list.length;i++) {
+                let p = Object.assign({}, list[i])
+                p['quantity'] = 0
+                p['subtotal'] = 0
+                this.setCartList(p)
+            }
         },
         changeFilter(index) {
             this.selectedFilter = index
@@ -124,6 +138,7 @@ export default {
             this.pwd = ''
             this.setId(res.user._id)
             this.setName(res.user.userName)
+            this.initializeCartList(this.goods)
         },
         ...mapMutations({
             setId: 'SET_ID',

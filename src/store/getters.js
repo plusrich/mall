@@ -9,3 +9,7 @@ export const name = (state) => {
 export const cartList = (state) => {
     return state.cartList
 }
+
+export const order = (state) => {
+    return state.order
+}

@@ -9,7 +9,22 @@ export default {
     },
     [types.SET_CARTLIST](state, item) {
         let list = state.cartList.slice()
-        list.push(item)
+
+        let index = list.findIndex((p) => {
+            return p._id === item._id
+        })
+
+        if (index < 0) {
+            list.unshift(item)
+        }
+
+        if (index >= 0) {
+            list.splice(index, 1, item)
+        }
+        
         state.cartList = list
-    }
+    },
+    [types.SET_ORDER](state, obj) {
+        state.order = obj
+    },
 }
