@@ -3,16 +3,22 @@
         <h2 class="title">{{ title }}</h2>
         <ul class="list">
             <li v-for="(item, index) in data" :key="index" class="list-item">
-                <p class="detail recipient">{{ item.recipient }}</p>
-                <p class="detail address">{{ item.location }}</p>
-                <p class="detail phone">{{ item.phone }}</p>
+                <p class="detail recipient">收件人：{{ item.recipient }}</p>
+                <p class="detail address">送货地址：{{ item.location }}</p>
+                <p class="detail phone">联系电话：{{ item.phone }}</p>
                 <i class="icon-bin"></i>
+            </li>
+            <li class="addAddress">
+                <i class="el-icon-circle-plus-outline" @click="add"></i>
+                <p class="text">添加收货地址</p>
             </li>
         </ul>
     </div>
 </template>
 
 <script>
+import Modal from 'base/modal/modal'
+
 export default {
     props: {
         title: {
@@ -23,6 +29,14 @@ export default {
             type: Array,
             default: []
         }
+    },
+    methods: {
+        add() {
+            this.$emit('addAddress')
+        }
+    },
+    components: {
+        Modal
     }
 }
 </script>
@@ -74,5 +88,29 @@ export default {
                 bottom 15px
                 right 20px
                 cursor pointer
+        .addAddress
+            width calc(25% - 20px)
+            height 175px
+            background-color $background-color
+            margin 0 20px 20px 0
+            position relative
+            .el-icon-circle-plus-outline
+                border 1px dashed $font-emphasize-color
+                font-size 2.5rem
+                width 60px
+                height 40px
+                padding 40px
+                color $font-light-color
+                position absolute
+                left 0
+                right 0
+                top 0
+                bottom 0
+                margin auto
+            .el-icon-circle-plus-outline:hover
+                cursor pointer
+            .text
+                margin-top 115px
+
 </style>
 
