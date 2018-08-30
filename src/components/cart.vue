@@ -22,9 +22,9 @@
                         <span>{{ item.price }}</span>
                     </div>
                     <div class="g-quantity g-column">
-                        <i class="icon-minus" @mousedown="changeQuantityBefore" @mouseup="minusQuantity(item)"></i>
+                        <i class="icon-minus" @mousedown="changeQuantityBefore" @mouseup="minusQuantity(item, index)"></i>
                         <input class="input" ref="quantityInput" v-model="item.quantity" @change="changeQuantity(item, index)">
-                        <i class="icon-plus" @mousedown="changeQuantityBefore" @mouseup="plusQuantity(item)"></i>
+                        <i class="icon-plus" @mousedown="changeQuantityBefore" @mouseup="plusQuantity(item, index)"></i>
                     </div>
                     <div class="g-subtotal g-column">
                         <span>{{ item.subtotal }}</span>
@@ -38,7 +38,7 @@
                 <div class="select">
                     <i class="icon-checkmark2"></i>
                     <span class="all">Select all</span>
-                    <span class="clear">Delete selected</span>
+                    <span class="clear" @click="deletedSeleted">Delete selected</span>
                 </div>
                 <div class="checkout">
                     <span class="total">item total: 
@@ -49,6 +49,9 @@
             </div>
         </div>
         <mall-footer></mall-footer>
+        <modal ref="orderModal">
+            <p slot="content">您还未选择任何商品</p>
+        </modal>
     </div>
 </template>
 
@@ -56,12 +59,16 @@
 import MallFooter from 'base/mall-footer/mall-footer'
 import MallHeader from 'base/mall-header/mall-header'
 import MallNav from 'base/mall-nav/mall-nav'
+import Modal from 'base/modal/modal'
 import {mapGetters, mapMutations} from 'vuex'
 
 export default {
     data() {
         return {
-            
+            purchase: {
+                index: 0,
+                quantity: 0
+            }
         }
     },
     computed: {
@@ -91,7 +98,7 @@ export default {
         changeQuantityBefore(e) {
             //e.target.style.transform = 'scale(0.9, 0.9)'
         },
-        minusQuantity(item) {
+        minusQuantity(item, index) {
             let p = Object.assign({}, item)
             if (p.quantity === 0) {
                 return
@@ -100,31 +107,45 @@ export default {
             p.quantity -= 1
             p.subtotal -= p.price
             this.setCartList(p)
+            this.purchase.index = index
+            this.purchase.quantity = p.quantity
         },
-        plusQuantity(item) {
+        plusQuantity(item, index) {
             let p = Object.assign({}, item)
             p.quantity = Number(p.quantity)
             p.quantity += 1
             p.subtotal += p.price
             this.setCartList(p)
+            this.purchase.index = index
+            this.purchase.quantity = p.quantity
         },
         changeQuantity(item, index) {
             let value = Number(this.$refs.quantityInput[index].value)
+            let p = Object.assign({}, item)
             if (isNaN(value) || Number(value) <= 0) {
-                let p = Object.assign({}, item)
                 p.quantity = 0
                 p.subtotal = 0
                 this.setCartList(p)
                 this.$refs.quantityInput[index].value = 0
             } else {
-                let p = Object.assign({}, item)
                 p.quantity = value
                 p.subtotal = p.quantity * p.price
                 this.setCartList(p)
             }
+            this.purchase.index = index
+            this.purchase.quantity = p.quantity
         },
         toggleCheckStatus(item) {
             item.checked = !item.checked
+        },
+        deletedSeleted() {
+            for (var i = 0;i < this.cartList.length;i++) {
+                let item = this.cartList[i]
+                let p = Object.assign({}, item)
+                p.quantity = 0
+                p.checked = false
+                this.setCartList(p)
+            }
         },
         initializeOrder() {
             let order = {
@@ -148,7 +169,7 @@ export default {
                 }
             }
             if (odr.goods.length === 0) {
-                alert('你还未选择任何商品')
+                this.$refs.orderModal.show()
                 return
             }
             this.setOrder(odr)
@@ -159,10 +180,23 @@ export default {
             setOrder: 'SET_ORDER'
         })
     },
+    watch: {
+        purchase: {
+            handler(newVal) {
+                if (newVal.quantity === 0) {
+                    this.cartList[newVal.index].checked = false
+                } else {
+                    this.cartList[newVal.index].checked = true
+                }
+            },
+            deep: true
+        }
+    },
     components: {
         MallFooter,
         MallHeader,
-        MallNav
+        MallNav,
+        Modal
     }
 }
 </script>
@@ -288,7 +322,5 @@ export default {
                 text-align center
                 color $input-border-color
                 border 0
-
-        
 </style>
 

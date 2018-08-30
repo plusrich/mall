@@ -4,7 +4,7 @@
         <ul class="list">
             <li v-for="(item, index) in data" :key="index" class="list-item">
                 <p class="detail recipient">{{ item.recipient }}</p>
-                <p class="detail address">{{ item.address }}</p>
+                <p class="detail address">{{ item.location }}</p>
                 <p class="detail phone">{{ item.phone }}</p>
                 <i class="icon-bin"></i>
             </li>
@@ -21,16 +21,7 @@ export default {
         },
         data: {
             type: Array,
-            default: [{recipient: 'Jack', address: '啊好的卡刷卡金鲨看啥', phone: '123124123123'},
-            {recipient: 'Jack', address: '啊好的卡刷卡金鲨看啥', phone: '123124123123'},
-            {recipient: 'Jack', address: '啊好的卡刷卡金鲨看啥', phone: '123124123123'},
-            {recipient: 'Jack', address: '啊好的卡刷卡金鲨看啥', phone: '123124123123'},
-            {recipient: 'Jack', address: '啊好的卡刷卡金鲨看啥', phone: '123124123123'},
-            {recipient: 'Jack', address: '啊好的卡刷卡金鲨看啥', phone: '123124123123'},
-            {recipient: 'Jack', address: '啊好的卡刷卡金鲨看啥', phone: '123124123123'},
-            {recipient: 'Jack', address: '啊好的卡刷卡金鲨看啥', phone: '123124123123'},
-            {recipient: 'Jack', address: '啊好的卡刷卡金鲨看啥', phone: '123124123123'}
-            ]
+            default: []
         }
     }
 }

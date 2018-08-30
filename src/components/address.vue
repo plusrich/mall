@@ -3,7 +3,7 @@
         <mall-header></mall-header>
         <mall-nav currentRoute="Address"></mall-nav>
         <order-progress></order-progress>
-        <list class="list"></list>
+        <list class="list" :data="addressList"></list>
         <div class="buttons">
             <button type="submit" class="previous">PREVIOUS</button>
             <button type="submit" class="next" @click="goToOrderConfirm">NEXT</button>
@@ -19,8 +19,27 @@ import MallHeader from 'base/mall-header/mall-header'
 import MallNav from 'base/mall-nav/mall-nav'
 import OrderProgress from 'base/order-progress/order-progress'
 import List from 'base/list/list'
+import {getAddress} from 'common/js/api.js'
+import {mapGetters} from 'vuex'
 
 export default {
+    data() {
+        return {
+            addressList: []
+        }
+    },
+    computed: {
+        ...mapGetters([
+            'id'
+        ])
+    },
+    mounted() {
+        setTimeout(async () => {
+            let obj = await getAddress(this.id)
+            this.addressList = obj.data.addressList
+            console.log(this.addressList)
+        }, 20)
+    },
     methods: {
         goToOrderConfirm() {
             this.$router.push('/orderConfirm')

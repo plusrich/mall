@@ -24,3 +24,17 @@ export function getGoods() {
         })
     })
 }
+
+export function getAddress(id) {
+    return new Promise((resolve, reject) => {
+        axios.get('http://localhost:8000/api/address/get', {
+            params: {
+                id: id
+            }
+        }).then((res) => {
+            resolve(res.data)
+        }).catch((error) => {
+            reject(error)
+        })
+    })
+}

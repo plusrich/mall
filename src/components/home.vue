@@ -48,7 +48,7 @@
 import MallFooter from 'base/mall-footer/mall-footer'
 import MallHeader from 'base/mall-header/mall-header'
 import MallNav from 'base/mall-nav/mall-nav'
-import Modal from 'base/Modal/Modal'
+import Modal from 'base/modal/modal'
 import GoodsList from 'components/goods-list'
 import {login, getGoods} from 'common/js/api.js'
 import {mapGetters, mapMutations} from 'vuex'
