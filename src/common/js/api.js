@@ -38,3 +38,29 @@ export function getAddress(id) {
         })
     })
 }
+
+export function addOneAddress(address, id) {
+    return new Promise((resolve, reject) => {
+        axios.post('http://localhost:8000/api/address/add', {
+            address: address,
+            id: id
+        }).then((res) => {
+            resolve(res.data)
+        }).catch((error) => {
+            reject(error)
+        })
+    })
+}
+
+export function deleteOneAddress(addressId, userId) {
+    return new Promise((resolve, reject) => {
+        axios.post('http://localhost:8000/api/address/delete', {
+            addressId: addressId,
+            userId: userId
+        }).then((res) => {
+            resolve(res.data)
+        }).catch((error) => {
+            reject(error)
+        })
+    })
+}

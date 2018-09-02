@@ -2,11 +2,11 @@
     <div class="list-wrapper">
         <h2 class="title">{{ title }}</h2>
         <ul class="list">
-            <li v-for="(item, index) in data" :key="index" class="list-item">
-                <p class="detail recipient">收件人：{{ item.recipient }}</p>
+            <li v-for="(item, index) in data" :key="index" :class="['list-item', item.isDefault === true ? 'default' : '']">
+                <p class="detail recipient" :ref="'recipient' + index">收件人：{{ item.recipient }}</p>
                 <p class="detail address">送货地址：{{ item.location }}</p>
                 <p class="detail phone">联系电话：{{ item.phone }}</p>
-                <i class="icon-bin"></i>
+                <i class="icon-bin" @click="del(item)"></i>
             </li>
             <li class="addAddress">
                 <i class="el-icon-circle-plus-outline" @click="add"></i>
@@ -33,6 +33,9 @@ export default {
     methods: {
         add() {
             this.$emit('addAddress')
+        },
+        del(item) {
+            this.$emit('deleteAddress', item)
         }
     },
     components: {
@@ -73,6 +76,26 @@ export default {
             padding 15px 0 0 20px
             margin 0 20px 20px 0
             position relative
+            .detail
+                width 100%
+                text-align left
+                margin 0
+            .address
+                margin-top 10px
+            .phone
+                margin-top 40px
+            .icon-bin
+                font-size $font-size-medium-x
+                color $font-middle-color
+                position absolute
+                bottom 15px
+                right 20px
+                cursor pointer
+        .default
+            width calc(25% - 20px)
+            border 1px solid $font-emphasize-color
+            height 175px
+            box-sizing border-box
             .detail
                 width 100%
                 text-align left
