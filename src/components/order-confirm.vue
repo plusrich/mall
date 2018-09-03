@@ -13,7 +13,7 @@
             <ul class="cart-list">
                 <li v-for="(item, index) in  cart" :key="index" class="cart-item">
                     <div class="g-items g-column">
-                        <img :src="'static/image/' + item.image" class="image" width="70" height="90">
+                        <img :src="'static/image/' + item.productImage" class="image" width="70" height="90">
                         <span class="name">{{ item.productName }}</span>
                     </div>
                     <div class="g-price g-column">
@@ -41,20 +41,52 @@ import MallFooter from 'base/mall-footer/mall-footer'
 import MallHeader from 'base/mall-header/mall-header'
 import MallNav from 'base/mall-nav/mall-nav'
 import OrderProgress from 'base/order-progress/order-progress'
+import {mapGetters, mapMutations} from 'vuex'
 
 export default {
     data() {
         return {
-            cart: [{productName: '鞋子', price: 120, image: 'shoe.png'},
-            {productName: 'T恤衫', price: 50, image: 't-shirt.png'},
-            {productName: '眼镜', price: 80, image: 'glass.png'},
-            {productName: '钱包', price: 100, image: 'bag.png'}]
+            cart: []
         }
+    },
+    computed: {
+        ...mapGetters([
+            'order'
+        ])
+    },
+    mounted() {
+        this.cart = this.order.goods
     },
     methods: {
         goToOrderSuccess() {
+            let {...odr} = this.order
+            let date = new Date()
+            odr.date = this.normalizeDate(date)
+            odr.totalPrice = this.normalizeTotalPrice(odr.goods)
+            //console.log(odr)
+            this.setOrder(odr)
             this.$router.push('orderSuccess')
-        }
+        },
+        normalizeDate(date) {
+            let year = date.getFullYear()
+            let month = date.getMonth() + 1
+            let day = date.getDate()
+            let hour = date.getHours()
+            let minute = date.getMinutes()
+            let second = date.getSeconds()
+            return `${month}/${day}/${year}  ${hour}:${minute}:${second}`
+        },
+        normalizeTotalPrice(goods) {
+            let sum = 0
+            let len = goods.length
+            for (var i = 0;i < len;i++) {
+                sum += goods[i].subtotal
+            }
+            return sum
+        },
+        ...mapMutations({
+            setOrder: 'SET_ORDER'
+        })
     },
     components: {
         MallFooter,

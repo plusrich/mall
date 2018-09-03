@@ -152,6 +152,7 @@ export default {
                 date: '',
                 goods: [],
                 address: '',
+                totalPrice: 0,
                 user: {
                     id: this.id,
                     name: this.name

@@ -3,7 +3,7 @@
         <mall-header></mall-header>
         <mall-nav currentRoute="Address"></mall-nav>
         <order-progress></order-progress>
-        <list class="list" :data="currentAddressList" @addAddress="addAddress" @deleteAddress="deleteAddress"></list>
+        <list class="list" :data="currentAddressList" @addAddress="addAddress" @deleteAddress="deleteAddress" @makeDefault="makeDefault"></list>
         <div class="show-more">
             <span class="more" @click="switchAddressList">{{showMoreFlag ? 'more' : 'less' }}</span>
             <i :class="[showMoreFlag ? 'icon-circle-down' : 'icon-circle-up']"></i>
@@ -58,8 +58,8 @@ import MallNav from 'base/mall-nav/mall-nav'
 import OrderProgress from 'base/order-progress/order-progress'
 import List from 'base/list/list'
 import Modal from 'base/modal/modal'
-import {getAddress, addOneAddress, deleteOneAddress} from 'common/js/api.js'
-import {mapGetters} from 'vuex'
+import {getAddress, addOneAddress, deleteOneAddress, setDefaultAddress} from 'common/js/api.js'
+import {mapGetters, mapMutations} from 'vuex'
 
 export default {
     data() {
@@ -84,7 +84,8 @@ export default {
             }
         },
         ...mapGetters([
-            'id'
+            'id',
+            'order'
         ])
     },
     mounted() {
@@ -101,6 +102,12 @@ export default {
             }, 20)
         },
         goToOrderConfirm() {
+            let {...odr} = this.order
+            let defaultAddress=  this.fullAddressList.find((item) => {
+                return item.isDefault === true
+            })
+            odr.address = defaultAddress
+            this.setOrder(odr)
             this.$router.push('/orderConfirm')
         },
         switchAddressList() {
@@ -114,14 +121,29 @@ export default {
             let obj = await addOneAddress(this.address, this.id)
             this.fullAddressList = obj.data.addressList
             this.AddressList = this.fullAddressList.slice(0, 3)
+            this.address = {
+                isDefault: false
+            }
+            this.$refs.modalAddressAdd.hide()
+            //console.log(this.fullAddressList)
         },
         cancelAddAddress() {
-            return
+            this.address = {
+                isDefault: false
+            }
+            this.$refs.modalAddressAdd.hide()
         },
         async deleteAddress(item) {
-            let obj = await deleteOneAddress(item.addressId, this.id)
-            console.log(obj)
-        }
+            let obj = await deleteOneAddress(item._id, this.id)
+            //console.log(obj)
+        },
+        async makeDefault(item) {
+            let obj = await setDefaultAddress(item, this.id)
+            console.log(item)
+        },
+        ...mapMutations({
+            setOrder: 'SET_ORDER'
+        })
     },
     components: {
         MallFooter,

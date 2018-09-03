@@ -6,6 +6,7 @@
                 <p class="detail recipient" :ref="'recipient' + index">收件人：{{ item.recipient }}</p>
                 <p class="detail address">送货地址：{{ item.location }}</p>
                 <p class="detail phone">联系电话：{{ item.phone }}</p>
+                <p :class="item.isDefault ? 'default-address' : 'make-default'" @click="dft(item)">{{ item.isDefault ? 'default address' : 'make default' }}</p>
                 <i class="icon-bin" @click="del(item)"></i>
             </li>
             <li class="addAddress">
@@ -36,6 +37,12 @@ export default {
         },
         del(item) {
             this.$emit('deleteAddress', item)
+        },
+        dft(item) {
+            if (item.isDefault) {
+                return
+            }
+            this.$emit('makeDefault', item)
         }
     },
     components: {
@@ -91,6 +98,13 @@ export default {
                 bottom 15px
                 right 20px
                 cursor pointer
+            .default-address
+                text-align left
+                color $font-emphasize-color
+            .make-default
+                text-align left
+                color $font-emphasize-color
+                cursor pointer
         .default
             width calc(25% - 20px)
             border 1px solid $font-emphasize-color
@@ -110,6 +124,13 @@ export default {
                 position absolute
                 bottom 15px
                 right 20px
+                cursor pointer
+            .default-address
+                text-align left
+                color $font-emphasize-color
+            .make-default
+                text-align left
+                color $font-emphasize-color
                 cursor pointer
         .addAddress
             width calc(25% - 20px)

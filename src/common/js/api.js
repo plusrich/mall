@@ -64,3 +64,9 @@ export function deleteOneAddress(addressId, userId) {
         })
     })
 }
+
+export function setDefaultAddress(item, userId) {
+    return new Promise((resolve, reject) => {
+        axios.post('/setDefault', )
+    })
+}
