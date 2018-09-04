@@ -50,7 +50,7 @@ import MallHeader from 'base/mall-header/mall-header'
 import MallNav from 'base/mall-nav/mall-nav'
 import Modal from 'base/modal/modal'
 import GoodsList from 'components/goods-list'
-import {login, getGoods} from 'common/js/api.js'
+import {login, getGoods, sortByPrice, filterByPrice} from 'common/js/api.js'
 import {mapGetters, mapMutations} from 'vuex'
 
 export default {
@@ -111,18 +111,36 @@ export default {
                 this.setCartList(p)
             }
         },
-        changeFilter(index) {
+        async changeFilter(index) {
             this.selectedFilter = index
+            //let obj = await filterByPrice()
+            if (index === 0) {
+                let obj = await getGoods()
+                this.goods = obj.products
+            } else {
+                let range = this.filter[index]
+                let min = range.match(/\d+\.\d+(?=\s+-\s+)/)
+                min = Number(min[0])
+                let max = range.match(/(?<=\s+\-\s+)\d+\.\d+/)
+                max = Number(max[0])
+                let obj = await filterByPrice(min, max)
+                this.goods = obj.data
+            }
         },
-        changeDefaultSort() {
+        async changeDefaultSort() {
             this.$refs.defaultSort.style.color = 'rgb(238, 122, 35)'
             this.$refs.priceSort.style.color = 'rgb(0, 0, 0)'
+            let obj = await getGoods()
+            this.goods = obj.products
         },
-        changePriceSort() {
+        async changePriceSort() {
             this.ascending = !this.ascending
             this.descending = !this.descending
             this.$refs.defaultSort.style.color = 'rgb(0, 0, 0)'
             this.$refs.priceSort.style.color = 'rgb(238, 122, 35)'
+            let sortFlag = this.ascending === true ? -1 : 1
+            let obj = await sortByPrice(sortFlag)
+            this.goods = obj.data
         },
         async sendLoginRequest() {
             let user = this.user

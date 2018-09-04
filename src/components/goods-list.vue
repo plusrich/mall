@@ -1,6 +1,6 @@
 <template>
     <div class="goods-list-wrapper">
-        <div class="good" v-for="(item, index) in data" :key="index" v-show="data.length > 1">
+        <div class="good" v-for="(item, index) in data" :key="index" v-show="data.length > 0">
             <img :src="'../../static/image/' + item.productImage" width="140" height="140" class="good-image">
             <p class="good-name">{{ item.productName }}</p>
             <p class="good-price">{{ item.price }}</p>

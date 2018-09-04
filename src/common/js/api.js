@@ -25,6 +25,35 @@ export function getGoods() {
     })
 }
 
+export function sortByPrice(sortFlag) {
+    return new Promise((resolve, reject) => {
+        axios.get('http://localhost:8000/api/goods/sort', {
+            params: {
+                sort: sortFlag
+            }
+        }).then((res) => {
+            resolve(res.data)
+        }).catch((err) => {
+            reject(err)
+        })
+    })
+}
+
+export function filterByPrice(min, max) {
+    return new Promise((resolve, reject) => {
+        axios.get('http://localhost:8000/api/goods/filter', {
+            params: {
+                min: min,
+                max: max
+            }
+        }).then((res) => {
+            resolve(res.data)
+        }).catch((err) => {
+            reject(err)
+        })
+    })
+}
+
 export function getAddress(id) {
     return new Promise((resolve, reject) => {
         axios.get('http://localhost:8000/api/address/get', {
