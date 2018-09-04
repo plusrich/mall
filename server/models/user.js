@@ -10,11 +10,42 @@ const userSchema = new Schema({
     userPwd: String,
     addressList: [
         {
+            _id: ObjectId,
             recipient: '',
             location: '',
             phone: '',
-            addressId: ObjectId,
-            isDefault: Boolean
+            isDefault: Boolean,
+            addressId: String,
+        }
+    ],
+    orderList: [
+        {
+            _id: ObjectId,
+            date: String,
+            goods: [
+                {
+                    checked: Boolean,
+                    price: Number,
+                    productId: Number,
+                    productImage: String,
+                    productName: String,
+                    quantity: Number,
+                    subtotal: Number,
+                    _id: ObjectId
+                }
+            ],
+            totalPrice: Number,
+            user: {
+                id: String,
+                name: String
+            },
+            address: {
+                recipient: String,
+                location: String,
+                phone: Number,
+                isDefault: Boolean,
+                addressId: String
+            }
         }
     ]
 })

@@ -24,6 +24,9 @@ export default {
         
         state.cartList = list
     },
+    [types.CLEAR_CARTLIST](state) {
+        state.cartList = []
+    },
     [types.SET_ORDER](state, obj) {
         state.order = obj
     },

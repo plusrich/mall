@@ -65,8 +65,28 @@ export function deleteOneAddress(addressId, userId) {
     })
 }
 
-export function setDefaultAddress(item, userId) {
+export function setDefaultAddress(addressId, userId) {
     return new Promise((resolve, reject) => {
-        axios.post('/setDefault', )
+        axios.post('http://localhost:8000/api/address/setDefault', {
+            addressId: addressId,
+            userId: userId
+        }).then((res) => {
+            resolve(res.data)
+        }).catch((err) => {
+            reject(err)
+        })
+    })
+}
+
+export function addOneOrder(order, userId) {
+    return new Promise((resolve, reject) => {
+        axios.post('http://localhost:8000/api/order/add', {
+            order: order,
+            userId: userId
+        }).then((res) => {
+            resolve(res.data)
+        }).catch((err) => {
+            reject(err)
+        })
     })
 }

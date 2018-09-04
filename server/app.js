@@ -6,6 +6,7 @@ const app = express()
 const login = require('./routes/login')
 const products = require('./routes/products')
 const address = require('./routes/address')
+const order = require('./routes/order')
 
 let allowCrossDomain = (req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:8080')
@@ -29,6 +30,7 @@ app.get('/', (req, res, next) => {
 app.use('/api/user', login)
 app.use('/api/goods', products)
 app.use('/api/address', address)
+app.use('/api/order', order)
 
 app.listen(8000, () => {
     console.log('server runnig at http://localhost:8000')

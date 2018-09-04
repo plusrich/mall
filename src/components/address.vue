@@ -16,8 +16,8 @@
         <modal ref="modalAddressDelete">
             <div slot="content"></div>
             <div slot="button">
-                <button slot="button">取消</button>
-                <button slot="button">确认</button>
+                <button slot="button" @click="cancelDeleteAddress">取消</button>
+                <button slot="button" @click="confirmDeleteAddress">确认</button>
             </div>
         </modal>
         <modal ref="modalAddressAdd" class="add-adddress-modal">
@@ -60,6 +60,7 @@ import List from 'base/list/list'
 import Modal from 'base/modal/modal'
 import {getAddress, addOneAddress, deleteOneAddress, setDefaultAddress} from 'common/js/api.js'
 import {mapGetters, mapMutations} from 'vuex'
+import {generateUniqueId} from 'common/js/utils.js'
 
 export default {
     data() {
@@ -71,8 +72,10 @@ export default {
                 recipient: '',
                 location: '',
                 phone: null,
-                isDefault: false
-            }
+                isDefault: false,
+                addressId: ''
+            },
+            deletingAddress: {}
         }
     },
     computed: {
@@ -118,6 +121,7 @@ export default {
             this.$refs.modalAddressAdd.show()
         },
         async confirmAddAddress() {
+            this.address.addressId = generateUniqueId() + this.fullAddressList.length
             let obj = await addOneAddress(this.address, this.id)
             this.fullAddressList = obj.data.addressList
             this.AddressList = this.fullAddressList.slice(0, 3)
@@ -133,13 +137,25 @@ export default {
             }
             this.$refs.modalAddressAdd.hide()
         },
-        async deleteAddress(item) {
-            let obj = await deleteOneAddress(item._id, this.id)
-            //console.log(obj)
+        deleteAddress(item) {
+            this.deletingAddress = Object.assign({}, item)
+            this.$refs.modalAddressDelete.show()
+        },
+        cancelDeleteAddress() {
+            this.deletingAddress = {}
+            this.$refs.modalAddressDelete.hide()
+        },
+        async confirmDeleteAddress() {
+            this.$refs.modalAddressDelete.hide()
+            let obj = await deleteOneAddress(this.deletingAddress.addressId, this.id)
+            this.fullAddressList = obj.data.addressList
+            this.AddressList = this.fullAddressList.slice(0, 3)
+            this.deletingAddress = {}
         },
         async makeDefault(item) {
-            let obj = await setDefaultAddress(item, this.id)
-            console.log(item)
+            let obj = await setDefaultAddress(item.addressId, this.id)
+            this.fullAddressList = obj.data.addressList
+            this.AddressList = this.fullAddressList.slice(0, 3)
         },
         ...mapMutations({
             setOrder: 'SET_ORDER'

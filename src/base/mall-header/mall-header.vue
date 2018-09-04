@@ -4,14 +4,14 @@
         <a href="" class="login" @click.prevent="showLoginPrompt" v-show="id === ''">Login</a>
         <div v-show="id !== ''" class="user">
             <span class="name">hello, {{ name }}</span>
-            <a class="logout">Logout</a>
+            <a class="logout" @click="logOut">Logout</a>
         </div>
         <i class="icon-cart" @click="goCart"></i>
     </div>
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapMutations} from 'vuex'
 
 export default {
     data() {
@@ -37,7 +37,15 @@ export default {
         },
         goCart() {
             this.$emit('displayCart')
-        }
+        },
+        logOut() {
+            this.setId('')
+            this.setName('')
+        },
+        ...mapMutations({
+            setId: 'SET_ID',
+            setName: 'SET_NAME'
+        })
     }
 }
 </script>

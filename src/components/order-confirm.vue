@@ -20,10 +20,10 @@
                         <span>{{ item.price }}</span>
                     </div>
                     <div class="g-quantity g-column">
-                        <input class="input">
+                        <span>{{ item.quantity }}</span>
                     </div>
                     <div class="g-subtotal g-column">
-                        <span></span>
+                        <span>{{ item.subtotal }}</span>
                     </div>
                 </li>
             </ul>
@@ -42,6 +42,8 @@ import MallHeader from 'base/mall-header/mall-header'
 import MallNav from 'base/mall-nav/mall-nav'
 import OrderProgress from 'base/order-progress/order-progress'
 import {mapGetters, mapMutations} from 'vuex'
+import {generateUniqueId} from 'common/js/utils.js'
+import {addOneOrder} from 'common/js/api.js'
 
 export default {
     data() {
@@ -51,20 +53,27 @@ export default {
     },
     computed: {
         ...mapGetters([
+            'id',
             'order'
         ])
     },
     mounted() {
+        //console.log(this.order)
         this.cart = this.order.goods
+        this.initializeOrder()
     },
     methods: {
-        goToOrderSuccess() {
+        initializeOrder() {
             let {...odr} = this.order
             let date = new Date()
             odr.date = this.normalizeDate(date)
             odr.totalPrice = this.normalizeTotalPrice(odr.goods)
-            //console.log(odr)
             this.setOrder(odr)
+        },
+        async goToOrderSuccess() {
+            console.log(this.order)
+            //console.log(odr)
+            await addOneOrder(this.order, this.id)
             this.$router.push('orderSuccess')
         },
         normalizeDate(date) {
@@ -160,16 +169,6 @@ export default {
                         line-height 30px
                         cursor pointer
                         //font-size $font-size-large
-                    .input
-                        display inline-block
-                        height 30px
-                        line-height 30px
-                        width 50px
-                        box-sizing border-box
-                        border 1px solid $background-nav-color
-                        margin 0
-                        font-size $font-size-medium-x
-                        text-align center
     .buttons
             width 100%
             height 40px

@@ -22,15 +22,24 @@
 <script>
 import MallHeader from 'base/mall-header/mall-header'
 import OrderProgress from 'base/order-progress/order-progress'
+import {mapMutations} from 'vuex'
 
 export default {
+    mounted() {
+        this.clearCartList()
+        this.setOrder({})
+    },
     methods: {
         goToCart() {
             this.$router.push('/cart')
         },
         goToGoods() {
             this.$router.push('/')
-        }
+        },
+        ...mapMutations({
+            clearCartList: 'CLEAR_CARTLIST',
+            setOrder: 'SET_ORDER'
+        })
     },
     components: {
         MallHeader,

@@ -1,4 +1,5 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const router = express.Router()
 const users = require('../models/user')
 
@@ -39,6 +40,7 @@ router.post('/add', (req, res, next) => {
         }
     }).then((result) => {
         if (result) {
+            
             //返回新的addressList
             users.findById(id, '-userPwd', (err, doc) => {
                 if (err) {
@@ -47,13 +49,34 @@ router.post('/add', (req, res, next) => {
                         message: err
                     })
                 }
+                //查询新增地址是否为默认地址，若是，则修改，若不是，直接返回
                 if (doc) {
-                    console.log('return data')
-                    res.json({
-                        status: 1,
-                        data: doc,
-                        message: 'success'
-                    })
+                    if (address.isDefault === true) {
+                        let len = doc.addressList.length
+                        for (var i = 0;i < len;i++) {
+                            if(doc.addressList[i].addressId !== address.addressId) {
+                                doc.addressList[i].isDefault = false
+                            }
+                        }
+
+                        doc.save((err, newDoc) => {
+                            if (err) {
+                                console.log(err)
+                            } else {
+                                res.json({
+                                    status: 1,
+                                    data: newDoc,
+                                    message: 'add address success'
+                                })
+                            }
+                        })
+                    } else {
+                        res.json({
+                            status: 1,
+                            data: doc,
+                            message: 'success'
+                        })
+                    }
                 } else {
                     res.json({
                         status: 0,
@@ -73,27 +96,59 @@ router.post('/delete', (req, res, next) => {
     users.updateOne({'_id': userId}, {
         $pull: {
             'addressList': {
-                '_id': addressId
+                'addressId': addressId
             }
         }
-    }, (err, doc) => {
+    }).then((result) => {
+        users.findById(userId, '-userPwd', (err, doc) => {
+            if (err) {
+                console.log(err)
+            }
+            if (doc) {
+                res.json({
+                    status: 1,
+                    data: doc,
+                    message: 'success'
+                })
+            } else {
+                res.json({
+                    status: 0,
+                    data: doc,
+                    message: '用户数据为空'
+                })
+            }
+        })
+    })
+})
+
+
+router.post('/setDefault', (req, res, next) => {
+    let addressId = req.body.addressId
+    let userId = req.body.userId
+
+    users.findById(userId, (err, doc) => {
         if (err) {
-            res.json({
-                status: -1,
-                message: err
-            })
-        }
-        if (doc) {
-            res.json({
-                status: 1,
-                data: doc,
-                message: 'success'
-            })
+            console.log(err)
         } else {
-            res.json({
-                status: 0,
-                data: doc,
-                message: '空对象'
+            let len = doc.addressList.length
+            for (var i = 0;i < len;i++) {
+                if (addressId === doc.addressList[i].addressId) {
+                    doc.addressList[i].isDefault = true
+                } else {
+                    doc.addressList[i].isDefault = false
+                }
+            }
+
+            doc.save((err, newDoc) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    res.json({
+                        status: 1,
+                        data: newDoc,
+                        message: 'set default address success'
+                    })
+                }
             })
         }
     })
